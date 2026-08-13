@@ -20,7 +20,7 @@
 3) Затем скрипт вносит полученные данные в локально созданную MySQL БД с таблицей JABBER которую будет использовать Grafana для отображения точек на карте.
 
 ***
-Создание БД в MySQL:
+Создать БД в MySQL:
 ```
 sudo mysql -u root -p
 CREATE DATABASE JABBERS_DASHBOARD;
@@ -30,8 +30,6 @@ FLUSH PRIVILEGES;
 CREATE TABLE IF NOT EXISTS JABBER(id INT NOT NULL,lname VARCHAR(128) NOT NULL,ip_address VARCHAR(16) NOT NULL,conn_time VARCHAR(32) NOT NULL,asn_domain VARCHAR(128) NOT NULL,asn_name VARCHAR(128) NOT NULL,country VARCHAR(64) NOT NULL,region VARCHAR(128) NOT NULL,city VARCHAR(128) NOT NULL,latitude DECIMAL(8,6) NOT NULL,longitude DECIMAL(9,6) NOT NULL,timezone VARCHAR(64) NOT NULL,PRIMARY KEY(id));
 EXIT;
 ```
-
-
 ***
 Grafana (12.4.4)
 1) Создать datasource указывающий на Ваш MySQL. (или использовать уже имеющийся если есть)
@@ -41,3 +39,4 @@ Grafana (12.4.4)
 2) Импортировать dashboard из файла grafana_panel.json или настроить визуализацию в ручную используя datasource (визуализация Geomap)
 ![Example output](docs/images/p5OybMwsWA.png)
 ![Example output](docs/images/SOaRWZUZRq.png)
+***

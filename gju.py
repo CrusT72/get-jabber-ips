@@ -73,9 +73,10 @@ for item in v_unique_data:
     organization = ''
     timezone = ''
 
-    # Create URL for request
-    url = ipinfo_uri + item[2] + '?token=' + ipinfo_token
-
+    # Create URL for request with token
+    # url = ipinfo_uri + item[2] + '?token=' + ipinfo_token
+    # Create URL for request (free version)
+    url = ipinfo_uri + item[2]
     # Do request
     response = requests.get(url)
 
@@ -134,36 +135,4 @@ if v_unique_data:
 else:
     print("there isn't new data, leave old and exit")
 
-# Check table
-# sql = "SELECT * FROM JABBER;"
-# cursor.execute(sql)
-# result = cursor.fetchall()  # Fetch all results
-# for row in result:
-#    print(row)
-
-# Close connection
 MySQLDBcon.close()
-
-# Only for troubleshooting
-#for item in v_unique_data:
-#    print(item)
-
-# Information
-#
-# Connect to MYSQL from cli
-# mysql -uroot -psomepassword
-
-# Choose DB
-# USE databasename
-
-# Show all tables in database
-# SHOW TABLES;
-
-# Show all data from table JABBER
-# SELECT * FROM JABBER;
-
-# Delete table JABBER
-# DROP TABLE JABBER;
-
-# Create table JABBER
-# CREATE TABLE IF NOT EXISTS JABBER(id INT NOT NULL,lname VARCHAR(128) NOT NULL,ip_address VARCHAR(16) NOT NULL,conn_time VARCHAR(32) NOT NULL,asn_domain VARCHAR(128) NOT NULL,asn_name VARCHAR(128) NOT NULL,country VARCHAR(64) NOT NULL,region VARCHAR(128) NOT NULL,city VARCHAR(128) NOT NULL,latitude DECIMAL(8,6) NOT NULL,longitude DECIMAL(9,6) NOT NULL,timezone VARCHAR(64) NOT NULL,PRIMARY KEY(id));
