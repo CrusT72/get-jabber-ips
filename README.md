@@ -1,3 +1,8 @@
+![PyPI Version](https://img.shields.io/pypi/v/get-jabber-ips)
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)
+![Cisco](https://img.shields.io/badge/Cisco-1BA0D7?logo=cisco&logoColor=white)
 ### GeoIP dashboard в Grafana с выгрузкой данных из лога Cisco Expressway (12.5.6)
 
 ![Example output](docs/images/C4JjLpIBp6.png)
@@ -37,5 +42,3 @@ Grafana (12.4.4)
 2) Импортировать dashboard из файла grafana_panel.json или настроить визуализацию в ручную используя datasource (визуализация Geomap)
 ![Example output](docs/images/p5OybMwsWA.png)
 ![Example output](docs/images/SOaRWZUZRq.png)
-
-
