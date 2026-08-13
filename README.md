@@ -16,34 +16,26 @@
 3) Затем скрипт вносит полученные данные в локально созданную MySQL БД с таблицей JABBER которую будет использовать Grafana для отображения точек на карте.
 
 ***
-Структура таблицы в MySQL
-```bash
-mysql> DESCRIBE JABBER;
-+------------+--------------+------+-----+---------+-------+
-| Field      | Type         | Null | Key | Default | Extra |
-+------------+--------------+------+-----+---------+-------+
-| id         | int          | NO   | PRI | NULL    |       |
-| lname      | varchar(128) | NO   |     | NULL    |       |
-| ip_address | varchar(16)  | NO   |     | NULL    |       |
-| conn_time  | varchar(32)  | NO   |     | NULL    |       |
-| asn_domain | varchar(128) | NO   |     | NULL    |       |
-| asn_name   | varchar(128) | NO   |     | NULL    |       |
-| country    | varchar(64)  | NO   |     | NULL    |       |
-| region     | varchar(128) | NO   |     | NULL    |       |
-| city       | varchar(128) | NO   |     | NULL    |       |
-| latitude   | decimal(8,6) | NO   |     | NULL    |       |
-| longitude  | decimal(9,6) | NO   |     | NULL    |       |
-| timezone   | varchar(64)  | NO   |     | NULL    |       |
-+------------+--------------+------+-----+---------+-------+
-12 rows in set (0.52 sec)
+Создание БД в MySQL:
 ```
-создать таблицу в MySQL:
-```bash
+sudo mysql -u root -p
+CREATE DATABASE JABBERS_DASHBOARD;
+CREATE USER 'MYSQLUSER'@'localhost' IDENTIFIED BY 'PASSWORD';
+GRANT ALL PRIVILEGES ON JABBERS_DASHBOARD.* TO 'MYSQLUSER'@'localhost';
+FLUSH PRIVILEGES;
 CREATE TABLE IF NOT EXISTS JABBER(id INT NOT NULL,lname VARCHAR(128) NOT NULL,ip_address VARCHAR(16) NOT NULL,conn_time VARCHAR(32) NOT NULL,asn_domain VARCHAR(128) NOT NULL,asn_name VARCHAR(128) NOT NULL,country VARCHAR(64) NOT NULL,region VARCHAR(128) NOT NULL,city VARCHAR(128) NOT NULL,latitude DECIMAL(8,6) NOT NULL,longitude DECIMAL(9,6) NOT NULL,timezone VARCHAR(64) NOT NULL,PRIMARY KEY(id));
+EXIT;
 ```
-***
-В Grafana (тестировалось с версией 12.4.4) использовался стандартный плагин Geomap.
-(попробуйте импортировать файл grafana_panel.json или настроить визуализацию в ручную.)
 
+
+***
+Grafana (12.4.4)
+1) Создать datasource указывающий на Ваш MySQL. (или использовать уже имеющийся если есть)
+![Example output](docs/images/mFPsf9xgyL.png)
+![Example output](docs/images/mFPsf9xgyL1.png)
+![Example output](docs/images/mFPsf9xgyL2.png)
+2) Импортировать dashboard из файла grafana_panel.json или настроить визуализацию в ручную используя datasource (визуализация Geomap)
+![Example output](docs/images/p5OybMwsWA.png)
+![Example output](docs/images/SOaRWZUZRq.png)
 
 
