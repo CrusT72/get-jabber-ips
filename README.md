@@ -4,6 +4,7 @@
 ![Cisco](https://img.shields.io/badge/Cisco-1BA0D7?logo=cisco\&logoColor=white)
 
 ### GeoIP Dashboard in Grafana using Cisco Expressway logs (12.5.6)
+Python 3.6.8 — tested version.
 
 ![Example output](docs/images/C4JjLpIBp6.png)
 
