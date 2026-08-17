@@ -22,7 +22,7 @@
 ***
 Создать БД в MySQL:
 ```
-sudo mysql -u root -p
+sudo mysql -u my_sql_admin_user -p my_sql_admin_user_password
 CREATE DATABASE JABBERS_DASHBOARD;
 CREATE USER 'MYSQLUSER'@'localhost' IDENTIFIED BY 'PASSWORD';
 GRANT ALL PRIVILEGES ON JABBERS_DASHBOARD.* TO 'MYSQLUSER'@'localhost';

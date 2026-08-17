@@ -1,127 +1,163 @@
 # Main script file.
 
-# Importing
+# Import required modules.
 import geoip2.database
 import re
 import pymysql
+import os
 
-# Define ExpresswayE logs location.
+# Define the location of the Expressway-E log file.
 # filename = '/var/log/syslog-ng/expresswaye.log'
-# Define ExpresswayE logs location.
 filename = 'expresswaye.log'
-# Define GeoIPdatabase location.
+# Define the GeoIP database location.
 db_city = "./docs/db/GeoIP2-City.mmdb"
-# Define MySQL server
-MySQLServer = '10.34.228.50'
+db_asn = "./docs/db/GeoLite2-ASN.mmdb"
 
-# Define key phrase for log search (for Expressway E version 12.5.6)
-regsearch = 'get_edge_sso?email='
-regsearch_oreceive = 'Receive Request'
+# Store all sessions from the syslog file.
+sessions = {}
+# Store sessions containing both request and response entries.
+filtered_sessions = {}
+# Store complete session details (syslog data + GeoIP2 lookup results).
+result_session = {}
 
-v_found_lines = []
-v_result_lines = []
-v_unique_data = []
-v_seen_names = set()
-
-## Main search cycle in log file
-with open(filename, 'r') as file:
+# Open the log file and select request entries containing a login and all response entries.
+with open(filename, "r", encoding="utf-8") as file:
     for line in file:
-        v_jabber = ''
-        v_user = ''
-        v_date = ''
-        v_time = ''
-        v_timestamp = ''
-        v_found_lines = []
+        if ("get_edge_sso?email=" in line and "Receive Request" in line) or ("Sending Response" in line):
+            # Remove the first part containing syslog-specific data.
+            parts = line.split(' ', 11)
+            # Store the remaining part of the line in a variable.
+            rest = parts[11]
+            # Convert the remaining part into a dictionary of parameters.
+            params = dict(re.findall(r'([\w-]+)="([^"]*)"', rest))
+            txn_id = params.get("Txn-id")
+            if txn_id:
+                sessions.setdefault(txn_id, []).append(params)
 
-        if "get_edge_sso?email=" in line and "Receive Request" in line:
-            # Only for troubleshooting
-            # print(line)
+# Check all sessions and keep only those containing both Receive Request and Sending Response entries.
+for txn_id, events in sessions.items():
+    has_receive = any("Receive Request" in event.get("Detail", "") for event in events)
+    has_response = any("Sending Response" in event.get("Detail", "") for event in events)
 
-            v_date = line.split()[5].split('T')[0]
-            v_time = line.split()[2].replace('"', "").split(',')[0]
-            v_timestamp = v_date + ' ' + v_time
-            v_jabber_ip = line.split()[18].split('=')[1].replace('"', "")
-            v_username = line.split()[21].split('=')[1].split('@')[0]
+    # If both entries exist, add the session to filtered_sessions, grouped by Txn-id.
+    if has_receive and has_response:
+        filtered_sessions[txn_id] = events
 
-            v_found_lines.append(v_timestamp)
-            v_found_lines.append(v_username)
-            v_found_lines.append(v_jabber_ip)
-            v_result_lines.append(v_found_lines)
+# Process filtered sessions and create result_session, grouped by Txn-id.
+for txn_id, events in filtered_sessions.items():
+    result_session[txn_id] = {}
 
-# Sorting result list by timestamp
-v_result_lines = sorted(v_result_lines, key=lambda item: item[0], reverse=True)
+    for event in events:
 
-# Get only unique items by username
-for item in v_result_lines:
-    if item[1] not in v_seen_names:
-        v_unique_data.append(item)
-        v_seen_names.add(item[1])
+        # For Receive Request events, extract the request time, client public IP address,
+        # and user login from the email address.
+        if "Receive Request" in event.get("Detail", ""):
+            result_session[txn_id]["request_time"] = event.get("UTCTime").split(",")[0]
+            result_session[txn_id]["userip"] = event.get("Src-ip")
+            result_session[txn_id]["userlogin"] = re.findall(r'email=([^&\s]+)', event.get("Msg", ""))[0].split("@")[0]
 
-# Only for troubleshooting
-# print(v_unique_data)
+        # For Sending Response events, store the Msg parameter.
+        if "Sending Response" in event.get("Detail", ""):
+            result_session[txn_id]["Msg"] = event.get("Msg")
 
-# Main cycle with requests to LOCAL GeoIP2-City DB
-for item in v_unique_data:
-    response = ''
+# Free memory used by intermediate session dictionaries.
+del sessions
+del filtered_sessions
 
-    # Do request
-    with geoip2.database.Reader(db_city) as reader:
-        response = reader.city(item[2])
+# Perform GeoIP2 lookups using the local City database.
+with geoip2.database.Reader(db_city) as reader:
 
-    item.append(response.country.name)
-    if response.city.name:
-        item.append(response.city.name)
-    else:
-        item.append('None')
-    if response.subdivisions.most_specific.name:
-        item.append(response.subdivisions.most_specific.name)
-    else:
-        item.append('None')
-    item.append(response.location.latitude)
-    item.append(response.location.longitude)
-    item.append(response.location.time_zone)
-    item.append('None')
-    item.append('None')
+    for txn_id, session in result_session.items():
 
-    # Only for troubleshooting
-    print(item)
+        # Use the client's public IP address as the lookup parameter.
+        ip = session["userip"]
 
-# Connect to MySQL database and insert data
-# Create connection
-MySQLDBcon = pymysql.connect(host=MySQLServer,
-                             user="mysqltestuser",
-                             passwd="Forwarding!239",
-                             db='JABBERS_DASHBOARD')
-# Creating a cursor
+        # Look up the IP address in the local GeoIP2 database.
+        response = reader.city(ip)
+
+        # Get the country name, or set it to 'Not found' if unavailable.
+        session["country"] = response.country.name or "Not found"
+        # Get the city name, or set it to 'Not found' if unavailable.
+        session["city"] = response.city.name or "Not found"
+        # Get the region name, or set it to 'Not found' if unavailable.
+        session["region"] = response.subdivisions.most_specific.name or "Not found"
+        # Get the latitude.
+        session["latitude"] = response.location.latitude
+        # Get the longitude.
+        session["longitude"] = response.location.longitude
+        # Get the time zone.
+        session["time_zone"] = response.location.time_zone
+
+with geoip2.database.Reader(db_asn) as reader:
+    for txn_id, session in result_session.items():
+        response = reader.asn(ip)
+
+        # Set the ASN name.
+        session["ASN"] = response.autonomous_system_organization or "Not found"
+        # Set the ASN number.
+        session["asn_number"] = response.autonomous_system_number or "Not found"
+
+# Print results for troubleshooting.
+# for txn_id, session in result_session.items():
+##    print(f"\nTXN-ID: {txn_id}")
+
+##    for key, value in session.items():
+##        print(f"  {key}: {value}")
+
+# Connect to the MySQL database and insert the results.
+# Create a database connection.
+
+# Set the following environment variables in PowerShell before running the script:
+# $env:MYSQL_SERVER="xxxxxxxxxxxxx"
+# $env:MYSQL_DB="xxxxxxxxxxxxx"
+# $env:MYSQL_USER="xxxxxxxxxxxxx"
+# $env:MYSQL_PASSWORD="xxxxxxxxxxxxx"
+
+MYSQL_SERVER = os.environ["MYSQL_SERVER"]
+MYSQL_USER = os.environ["MYSQL_USER"]
+MYSQL_PASSWORD = os.environ["MYSQL_PASSWORD"]
+MYSQL_DB = os.environ["MYSQL_DB"]
+
+MySQLDBcon = pymysql.connect(host=MYSQL_SERVER,
+                             user=MYSQL_USER,
+                             passwd=MYSQL_PASSWORD,
+                             db=MYSQL_DB)
+# Create a database cursor.
 cursor = MySQLDBcon.cursor()
-# defining id
-id = 0
+# Initialize the record ID.
+record_id = 0
 
-# Check if v_unique_data isn't null we clear(truncate table) else left old data in the table JABBER
-if v_unique_data:
-    print("There is some data so we must add it to database")
-    # clear old data in JABBER table
+# If result_session contains data, truncate the JABBER table and insert the new data.
+# Otherwise, keep the existing data.
+if result_session:
+    print("Data found. Truncating the table and inserting all current data.")
+    # Clear old data from the JABBER table.
     sql = "TRUNCATE TABLE JABBER"
     cursor.execute(sql)
     MySQLDBcon.commit()
 
-    # adding new data
-    for v_item in v_unique_data:
-        id += 1
-        # print(id)
-        sql = "INSERT INTO `JABBER` (id, lname, ip_address, conn_time, asn_domain, asn_name, country, region, city, latitude, longitude, timezone) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        # print(sql)
+    # Insert new data.
+    for txn_id, session in result_session.items():
+        # print("Just for test")
+        record_id += 1
+        sql = "INSERT INTO `JABBER` (id, lname, ip_address, conn_time, asn_number, asn_name, country, region, city, latitude, longitude, timezone, txn_id, response_code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
         cursor.execute(sql, (
-        id, v_item[1], v_item[2], v_item[0], v_item[10], v_item[9], v_item[3], v_item[5], v_item[4], v_item[6],
-        v_item[7], v_item[8]))
-        MySQLDBcon.commit()
+        record_id, session["userlogin"], session["userip"], session["request_time"], session["asn_number"], session["ASN"], session["country"], session["region"], session["city"], session["latitude"],
+        session["longitude"], session["time_zone"], txn_id, session["Msg"]))
+
+    MySQLDBcon.commit()
+
+    sql = "SELECT * FROM JABBER"
+    cursor.execute(sql)
+
+    rows = cursor.fetchall()
+
+    for row in rows:
+        print(row)
 
 else:
-    print("there isn't new data, leave old and exit")
+    print("No new data found. Keeping the existing data and exiting.")
 
 MySQLDBcon.close()
-
-""" 
-"""
 
