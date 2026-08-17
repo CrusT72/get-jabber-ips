@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/Python-3.6.8-3776AB?logo=python\&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql\&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana\&logoColor=white)
 ![Cisco](https://img.shields.io/badge/Cisco-1BA0D7?logo=cisco\&logoColor=white)
