@@ -11,7 +11,7 @@
 
 ## How it works
 
-1. The Python script (`gju.py`) parses the Cisco Expressway syslog file and extracts the following information:
+1. The Python script (`gju-local.py`) parses the Cisco Expressway syslog file and extracts the following information:
 
    * User login
    * Client IP address
