@@ -107,7 +107,8 @@ with geoip2.database.Reader(db_asn) as reader:
 # Connect to the MySQL database and insert the results.
 # Create a database connection.
 
-# Set the following environment variables in PowerShell before running the script:
+# Set the following environment variables before running the script.
+# There are for Powershell because my test environment is Windows\Powershell.
 # $env:MYSQL_SERVER="xxxxxxxxxxxxx"
 # $env:MYSQL_DB="xxxxxxxxxxxxx"
 # $env:MYSQL_USER="xxxxxxxxxxxxx"
