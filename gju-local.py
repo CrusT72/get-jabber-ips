@@ -70,8 +70,9 @@ with geoip2.database.Reader(db_asn) as reader:
         # Set the ASN number.
         session["asn_number"] = response.autonomous_system_number or "Not found"
 
-for session in sessions:
-    print(session)
+# Troubleshooting
+# for session in sessions:
+#    print(session)
 
 # Connect to the MySQL database and insert the results.
 # Create a database connection.
