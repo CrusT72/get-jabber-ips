@@ -2,7 +2,6 @@
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql\&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana\&logoColor=white)
 ![Cisco](https://img.shields.io/badge/Cisco-1BA0D7?logo=cisco\&logoColor=white)
-![Latest Release](https://img.shields.io/github/v/release/USERNAME/REPOSITORY)
 
 ### GeoIP Dashboard in Grafana using Cisco Expressway logs (12.5.6)
 Python 3.6.8 — tested version.
