@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS JABBER (
     latitude DECIMAL(8,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL,
     timezone VARCHAR(64) NOT NULL,
-    txn_id INT NOT NULL UNIQUE,
-    response_code VARCHAR(64) NOT NULL,
+    response_code VARCHAR(64),
+	status VARCHAR(64) NOT NULL,
     PRIMARY KEY(id)
 );
 
