@@ -11,7 +11,6 @@ Python 3.6.8 — tested version.
 ---
 
 ## How it works
-
 1. The Python script (`gju-local.py`) parses the Cisco Expressway syslog file and extracts the following information:
 
    * User login
@@ -31,6 +30,7 @@ Python 3.6.8 — tested version.
 
 3. The script stores the collected data in a local MySQL database. The `JABBER` table is then used as a data source by Grafana to display the client locations on a map.
 
+[![](https://mermaid.ink/img/pako:eNpdj09rg0AQxb_KMicLKv5do4dCo0kopNDSnhpzmMbVWFZXdpXEhnz3bmyTQuc0j_d7b5gT7ETBIIGSi8Nuj7Inb1ku85boedhUn4PFxQ653Y1bYln3ZG4sjp1kSh1wtFKiRsVFRcqas7trbD6BqbG-BMmKicdnUmCPH6jYRKp_aGYoXViL9s9If4yrzCa5NJ7G15c1yX7LbvRysheblcQSW9yCCZWsC0hK5IqZ0DDZ4EXD6RLIod-zhuWQ6LVgJQ68zyFvzzrXYfsuRANJLwedlGKo9lcxdPoNltVYSWxu5ZK1BZOpGNoeEjd2vKkEkhMcIQlmM9vxo9Cn1HOdWG8mjBrzPDuisRNTPwpC1428swlf013HpoE_C2kY0YA6YRDT8zdQQn3j?type=png)](https://mermaid.live/edit?utm_source=chatgpt.com#pako:eNpdj0Frg0AQhf_KMicLKmvUNXooNJqEQgot7akxh2lcjUVd2VUSG_Lfu9omhc5pHu97b5gz7EXGIYK8Esf9AWVH3pJUpg3R87AtPnurEnus7HbYEcu6JwtjeWolV-qIgxUTNahKFCQvK353jS0mMDY2Y5CsuXh8Jhl2-IGKT6T6hyaG0oWlaP6M-Me4ymSSK-NpeH3ZkOS37EavJnu5XUvMscEdmFDIMoMox0pxE2ouaxw1nMdACt2B1zyFSK8Zz7GvuhTS5qJzLTbvQtQQdbLXSSn64nAVfavf4EmJhcT6Vi55k3EZi77pIHLmjE4lEJ3hBJFH5zZ1A99lbObQUG8mDBqbBXbAQhoyN_B8xwlmFxO-prvUZp4795kfMI9R3wvZ5RtP-H3j)
 ---
 
 ## MySQL Database Setup
