@@ -8,7 +8,7 @@ import os
 
 # Define the location of the Expressway-E log file.
 # filename = '/var/log/syslog-ng/expresswaye.log'
-filename = 'expresswaye.log'
+filename = './docs/logs/expresswaye.log'
 # Define the GeoIP database location.
 db_city = "./docs/db/GeoIP2-City.mmdb"
 db_asn = "./docs/db/GeoLite2-ASN.mmdb"

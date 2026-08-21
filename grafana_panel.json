@@ -16,26 +16,17 @@
     ]
   },
   "editable": true,
-  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "links": [],
   "panels": [
     {
       "datasource": {
         "type": "mysql",
-        "uid": "b118a1c8-9458-4882-a4bc-7a565f9e2d2f"
+        "uid": "${DS_MYSQL}"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
           },
           "mappings": [],
           "thresholds": {
@@ -87,7 +78,7 @@
               "showLegend": false,
               "style": {
                 "color": {
-                  "fixed": "semi-dark-green"
+                  "fixed": "dark-green"
                 },
                 "opacity": 1,
                 "rotation": {
@@ -107,7 +98,7 @@
                 },
                 "symbolAlign": {
                   "horizontal": "center",
-                  "vertical": "center"
+                  "vertical": "middle"
                 },
                 "textConfig": {
                   "fontSize": 12,
@@ -120,12 +111,12 @@
             },
             "filterData": {
               "id": "byRefId",
-              "options": "C"
+              "options": "SUCCESS"
             },
             "location": {
-              "mode": "auto"
+              "mode": "coords"
             },
-            "name": "Jabber_Russia",
+            "name": "Successful logins",
             "tooltip": true,
             "type": "markers"
           },
@@ -134,7 +125,7 @@
               "showLegend": false,
               "style": {
                 "color": {
-                  "fixed": "dark-red"
+                  "fixed": "yellow"
                 },
                 "opacity": 1,
                 "rotation": {
@@ -154,7 +145,7 @@
                 },
                 "symbolAlign": {
                   "horizontal": "center",
-                  "vertical": "center"
+                  "vertical": "middle"
                 },
                 "textConfig": {
                   "fontSize": 12,
@@ -167,12 +158,12 @@
             },
             "filterData": {
               "id": "byRefId",
-              "options": "D"
+              "options": "FAILED"
             },
             "location": {
-              "mode": "auto"
+              "mode": "coords"
             },
-            "name": "Jabber",
+            "name": "Failed logins",
             "tooltip": true,
             "type": "markers"
           }
@@ -193,72 +184,36 @@
       "pluginVersion": "12.4.4",
       "targets": [
         {
-          "dataset": "CHKP",
           "datasource": {
             "type": "mysql",
-            "uid": "b118a1c8-9458-4882-a4bc-7a565f9e2d2f"
+            "uid": "${DS_MYSQL}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT lname as uname, ip_address, country, latitude as lat, longitude as lon FROM JABBER WHERE country = 'RU'",
-          "refId": "C",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "rawSql": "SELECT lname AS uname, ip_address, country, latitude AS lat, longitude AS lon FROM JABBER WHERE status = 'success'",
+          "refId": "SUCCESS"
         },
         {
-          "dataset": "CHKP",
           "datasource": {
             "type": "mysql",
-            "uid": "b118a1c8-9458-4882-a4bc-7a565f9e2d2f"
+            "uid": "${DS_MYSQL}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT lname as uname, ip_address, country, latitude as lat, longitude as lon FROM JABBER WHERE country <> 'RU'",
-          "refId": "D",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "rawSql": "SELECT lname AS uname, ip_address, country, latitude AS lat, longitude AS lon FROM JABBER WHERE status = 'failed'",
+          "refId": "FAILED"
         }
       ],
-      "title": "Cisco Jabbers",
+      "title": "Jabber authentication locations",
       "transparent": true,
       "type": "geomap"
     },
     {
       "datasource": {
         "type": "mysql",
-        "uid": "b118a1c8-9458-4882-a4bc-7a565f9e2d2f"
+        "uid": "${DS_MYSQL}"
       },
       "fieldConfig": {
         "defaults": {
@@ -291,82 +246,26 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "ip_address"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 160
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "uname"
-            },
-            "properties": [
-              {
-                "id": "custom.width"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "country"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 105
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "city"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 191
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "region"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 206
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 24,
         "x": 0,
         "y": 19
       },
-      "id": 3,
+      "id": 2,
       "options": {
         "cellHeight": "sm",
         "showHeader": true,
         "sortBy": [
           {
             "desc": false,
-            "displayName": "country"
+            "displayName": "uname"
+          },
+          {
+            "desc": true,
+            "displayName": "conn_time"
           }
         ]
       },
@@ -375,51 +274,39 @@
         {
           "datasource": {
             "type": "mysql",
-            "uid": "b118a1c8-9458-4882-a4bc-7a565f9e2d2f"
+            "uid": "${DS_MYSQL}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT ip_address, lname as uname, country, city, region, asn_name, asn_domain, conn_time FROM JABBER",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "rawSql": "SELECT ip_address, lname AS uname, country, city, region, asn_name, asn_number, status, conn_time FROM JABBER ORDER BY uname ASC",
+          "refId": "EVENTS"
         }
       ],
-      "title": "Cisco Jabber Clients",
+      "title": "Jabber authentication events",
       "type": "table"
     }
   ],
-  "preload": false,
-  "refresh": "",
   "schemaVersion": 42,
-  "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "MySQL datasource",
+        "name": "DS_MYSQL",
+        "options": [],
+        "query": "mysql",
+        "refresh": 1,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
-  "timepicker": {},
   "timezone": "browser",
-  "title": "Jabbers",
-  "uid": "adxx72m",
-  "version": 5,
-  "weekStart": ""
+  "title": "Cisco Jabbers GeoIP "
 }
